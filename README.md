@@ -4,7 +4,7 @@ This game was bootstrapped with [Create React App](https://github.com/facebook/c
 
 ## Demo
 
-[Pay the game](kivylius.com/games/black-vector)
+[Pay the game](https://kivylius.com/games/black-vector)
 
 ## Available Scripts
 
