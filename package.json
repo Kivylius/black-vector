@@ -2,6 +2,7 @@
   "name": "black-vector",
   "version": "0.1.1",
   "type": "module",
+  "homepage": "./",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
