@@ -1,5 +1,5 @@
 import { Player } from "./player";
-import { Path } from "paper";
+import { Path, Point } from "paper";
 
 class Enemy extends Player {
   constructor() {
@@ -14,30 +14,32 @@ class Enemy extends Player {
         y: 75,
       },
     };
+    this.speed = 4;
     this.damage = 0.01;
-    this.possition = {
+    this.initPossition = new Point({
       x: window.innerWidth + this.radius,
       y: window.innerHeight + this.radius,
-    };
-    this.player.remove();
-    this.player = new Path.Circle({
-      ...this.possition,
+    });
+    this.path.remove();
+    this.path = new Path.Circle({
+      ...this.initPossition,
       fillColor: this.color,
       radius: this.radius,
     });
   }
 
-  moveEnemy(playerPosition: paper.Point) {
+  //@overwrite
+  //@ts-ignore
+  moveEntity(playerPosition: paper.Point) {
     // move the enemy towards the player.
-    const enemyMove = 2;
-    const etoP = playerPosition.subtract(this.player.position);
-    this.player.position = this.player.position.add(etoP.normalize(enemyMove));
+    const etoP = playerPosition.subtract(this.path.position);
+    // this.path.position = this.path.position.add(etoP.normalize(this.speed));
   }
 
   //@overwrite
   //@ts-ignore
   draw({ player, onPlayerDeath }) {
-    this.moveEnemy(player.position);
+    this.moveEntity(player.position);
     this.moveHeathBar();
     this.checkIfDead(onPlayerDeath);
   }

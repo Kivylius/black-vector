@@ -7,20 +7,21 @@ class Player {
   width = 5;
   color = "white";
   damage = 0.01;
-  possition = {
+  initPossition = new Point({
     x: window.innerWidth / 2,
     y: window.innerHeight / 2,
-  };
-  player = new Path.Circle({
-    ...this.possition,
+  });
+  path = new Path.Circle({
+    ...this.initPossition,
     fillColor: this.color,
     radius: this.radius,
   });
   timeout = setTimeout(() => {}, 1);
-  playerMove = 5;
+  speed = 5;
   cursor = new Path.Line({
     segments: [zero, zero],
-    strokeColor: "white",
+    strokeColor: "red",
+    strokeWidth: 3,
   });
   health = {
     value: 1,
@@ -46,60 +47,59 @@ class Player {
     console.log("constructed", { this: this });
   }
 
-  movePlayer(key: string) {
+  moveEntity(key: string) {
     switch (key) {
       case "left":
       case "a":
-        this.player.position = this.player.position.add([-this.playerMove, 0]);
+        this.path.position = this.path.position.add([-this.speed, 0]);
         break;
       case "down":
       case "s":
-        this.player.position = this.player.position.add([0, this.playerMove]);
+        this.path.position = this.path.position.add([0, this.speed]);
         break;
       case "right":
       case "d":
-        this.player.position = this.player.position.add([this.playerMove, 0]);
+        this.path.position = this.path.position.add([this.speed, 0]);
         break;
       case "up":
       case "w":
-        this.player.position = this.player.position.add([0, -this.playerMove]);
+        this.path.position = this.path.position.add([0, -this.speed]);
         break;
     }
   }
 
   moveHeathBar() {
-    const x0 = this.player.position.x - this.health.offset.x;
-    const y01 = this.player.position.y - this.health.offset.y;
-    // const x1 = this.player.position.x + this.health.offset.x;
+    const x0 = this.path.position.x - this.health.offset.x;
+    const y01 = this.path.position.y - this.health.offset.y;
+    // const x1 = this.path.position.x + this.health.offset.x;
 
     this.health.bar.segments[0].point.x = x0;
     this.health.bar.segments[0].point.y = y01;
     this.health.bar.segments[1].point.x =
-      this.player.position.x +
+      this.path.position.x +
       (this.health.width * this.health.value - this.health.offset.x);
     this.health.bar.segments[1].point.y = y01;
 
     this.health.background.segments[0].point.x = x0;
     this.health.background.segments[0].point.y = y01;
     this.health.background.segments[1].point.x =
-      this.player.position.x + (this.health.width - this.health.offset.x);
+      this.path.position.x + (this.health.width - this.health.offset.x);
     this.health.background.segments[1].point.y = y01;
   }
 
   moveCursor(point: paper.Point) {
-    this.cursor.segments[1].point = point;
-    const ptoC = this.cursor.position.subtract(this.player.position);
+    const ptoC = point.subtract(this.path.position);
     const pToCDirr = ptoC.normalize(30);
-    this.cursor.segments[0].point = this.player.position;
-    this.cursor.segments[1].point = this.player.position.add(pToCDirr);
+    this.cursor.segments[0].point = this.path.position;
+    this.cursor.segments[1].point = this.path.position.add(pToCDirr);
   }
 
   takeDamage() {
     this.health.value -= this.damage;
-    this.player.style.fillColor = "orange" as unknown as paper.Color;
+    this.path.style.fillColor = "orange" as unknown as paper.Color;
     clearTimeout(this.timeout);
     this.timeout = setTimeout(() => {
-      this.player.style.fillColor = this.color as unknown as paper.Color;
+      this.path.style.fillColor = this.color as unknown as paper.Color;
     }, 200);
   }
 
@@ -111,22 +111,22 @@ class Player {
 
   reset() {
     this.health.value = 1.0;
-    this.player.position = new Point(this.possition);
+    this.path.position = this.initPossition;
   }
 
   draw({
     mouse,
     key,
-    onPlayerDeath,
+    onEntityDeath,
   }: {
     mouse: paper.Point;
     key: string;
-    onPlayerDeath: () => void;
+    onEntityDeath: () => void;
   }) {
+    this.moveEntity(key);
     this.moveCursor(mouse);
-    this.movePlayer(key);
     this.moveHeathBar();
-    this.checkIfDead(onPlayerDeath);
+    this.checkIfDead(onEntityDeath);
   }
 }
 

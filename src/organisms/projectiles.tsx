@@ -4,15 +4,16 @@ const center = new Point([window.innerWidth / 2, window.innerHeight / 2]);
 
 class Projectiles {
   projectiles: paper.Path.Circle[] = [];
-  radius = 2;
-  color = "white";
+  radius = 5;
+  speed = 7;
+  color = "blue";
   constructor() {
     console.log("constructed", { this: this });
   }
 
   create(from: paper.Path.Circle, to: paper.Path.Circle) {
     const ptoC = to.position.subtract(from.position);
-    const pToCDirrVector = ptoC.normalize(1);
+    const pToCDirrVector = ptoC.normalize();
     // const atPint = playerVecotr.add(player.player.cursor);
 
     this.projectiles.push(
@@ -20,7 +21,6 @@ class Projectiles {
         x: from.position.x,
         y: from.position.y,
         data: {
-          //   playerVecotr,
           pToCDirrVector,
         },
         radius: this.radius,
@@ -41,7 +41,7 @@ class Projectiles {
       // move projectiles
       const { pToCDirrVector } = projectile.data;
       this.projectiles[index].position = projectile.position.add(
-        pToCDirrVector.multiply(3)
+        pToCDirrVector.multiply(this.speed)
       );
 
       collisions.forEach((circle: paper.Path.Circle) => {

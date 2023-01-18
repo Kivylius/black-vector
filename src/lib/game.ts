@@ -47,28 +47,28 @@ class Game {
     tool.onMouseUp = () => {
       if (!this.running) return;
 
-      projectile.create(player.player, player.cursor);
+      projectile.create(player.cursor, player.cursor);
     }
 
     paperScope.view.onFrame = () => {
       if (!this.running) return;
 
       // player collision
-      player.draw({ mouse, key, onPlayerDeath: () => {
+      player.draw({ mouse, key, onEntityDeath: () => {
         reset();
         onFail();
       }});
 
       // player draw
-      enemy.draw({ player: player.player, onPlayerDeath: () => {
+      enemy.draw({ player: player.path, onPlayerDeath: () => {
         reset();
         let end = Date.now();
         onFinish((end - start) / 1000);
       }});
 
       // colide two object.
-      const distance = player.player.position.getDistance(
-        enemy.player.position
+      const distance = player.path.position.getDistance(
+        enemy.path.position
       );
       if (distance - player.radius < enemy.radius) {
         player.takeDamage();
@@ -76,7 +76,7 @@ class Game {
 
       // projectiles draw
       projectile.draw({collisions: [
-        enemy.player
+        enemy.path
       ], onCollision: () => {
         enemy.takeDamage();
         return true; // remove it
